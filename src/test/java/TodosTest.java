@@ -44,36 +44,36 @@ class TodosTest {
         todos.add(meeting);
 
         // Ищем с маленькой буквы - найдёт только SimpleTask
-        Task[] result1 = todos.search("молоко");
-        assertEquals(1, result1.length);
-
+        Task[] expected1 = { simpleTask };
+        Task[] actual1 = todos.search("молоко");
+        assertArrayEquals(expected1, actual1);
+        
         // Ищем с большой буквы - найдёт только Epic
-        Task[] result2 = todos.search("Молоко");
-        assertEquals(1, result2.length);
-
-        // Проверяем, что это разные задачи
-        assertTrue(result1[0] instanceof SimpleTask);
-        assertTrue(result2[0] instanceof Epic);
+        Task[] expected2 = { epic };
+        Task[] actual2 = todos.search("Молоко");
+        assertArrayEquals(expected2, actual2);
     }
-
+    
     @Test
-    void shouldSearchTasksByQueryCaseInsensitive() {
-        // Если нужен поиск без учёта регистра, нужно изменить логику в классах задач
-        // Но по условию задачи используется contains, который чувствителен к регистру
-        SimpleTask simpleTask = new SimpleTask(1, "Купить молоко");
-        String[] subtasks = { "Молоко", "Яйца" };
-        Epic epic = new Epic(2, subtasks);
-
+    void shouldSearchMeetingByTopic() {
+        Meeting meeting = new Meeting(1, "Планирование спринта", "Нетология", "10:00");
         Todos todos = new Todos();
-        todos.add(simpleTask);
-        todos.add(epic);
-
-        // Ищем слово "молоко" в любом регистре - нужно дважды проверять
-        Task[] result = todos.search("молоко");
-        assertEquals(1, result.length); // только SimpleTask
-
-        Task[] result2 = todos.search("Молоко");
-        assertEquals(1, result2.length); // только Epic
+        todos.add(meeting);
+        
+        Task[] expected = { meeting };
+        Task[] actual = todos.search("Планирование");
+        assertArrayEquals(expected, actual);
+    }
+    
+    @Test
+    void shouldSearchMeetingByProject() {
+        Meeting meeting = new Meeting(1, "Планирование спринта", "Нетология", "10:00");
+        Todos todos = new Todos();
+        todos.add(meeting);
+        
+        Task[] expected = { meeting };
+        Task[] actual = todos.search("Нетология");
+        assertArrayEquals(expected, actual);
     }
 
     @Test
@@ -82,29 +82,8 @@ class TodosTest {
         Todos todos = new Todos();
         todos.add(simpleTask);
 
-        Task[] result = todos.search("несуществующий");
-        assertEquals(0, result.length);
-    }
-
-    @Test
-    void shouldSearchMeetingByTopic() {
-        Meeting meeting = new Meeting(1, "Планирование спринта", "Нетология", "10:00");
-        Todos todos = new Todos();
-        todos.add(meeting);
-
-        Task[] result = todos.search("Планирование");
-        assertEquals(1, result.length);
-        assertTrue(result[0] instanceof Meeting);
-    }
-
-    @Test
-    void shouldSearchMeetingByProject() {
-        Meeting meeting = new Meeting(1, "Планирование спринта", "Нетология", "10:00");
-        Todos todos = new Todos();
-        todos.add(meeting);
-
-        Task[] result = todos.search("Нетология");
-        assertEquals(1, result.length);
-        assertTrue(result[0] instanceof Meeting);
+        Task[] expected = new Task[0];
+        Task[] actual = todos.search("несуществующий");
+        assertArrayEquals(expected, actual);
     }
 }
